@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "IngredientInput": {
+      "description": "A single ingredient from the user's input JSON.",
+      "properties": {
+        "name": {
+          "description": "Name of the ingredient to search for.",
+          "title": "Name",
+          "type": "string"
+        },
+        "amount": {
+          "description": "Amount of the ingredient.",
+          "title": "Amount",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Unit of measurement.",
+          "enum": [
+            "g",
+            "ml",
+            "piece"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OverrideMacros"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional manual macronutrient values to bypass APIs."
+        }
+      },
+      "required": [
+        "name",
+        "amount",
+        "unit"
+      ],
+      "title": "IngredientInput",
+      "type": "object"
+    },
+    "OverrideMacros": {
+      "description": "Manual overrides for an ingredient's nutritional profile.\nValues should be provided per 100g or 100ml.",
+      "properties": {
+        "protein_g": {
+          "default": 0.0,
+          "title": "Protein G",
+          "type": "number"
+        },
+        "fat_g": {
+          "default": 0.0,
+          "title": "Fat G",
+          "type": "number"
+        },
+        "carbs_g": {
+          "default": 0.0,
+          "title": "Carbs G",
+          "type": "number"
+        },
+        "water_g": {
+          "default": 0.0,
+          "title": "Water G",
+          "type": "number"
+        },
+        "ash_g": {
+          "default": 0.0,
+          "title": "Ash G",
+          "type": "number"
+        },
+        "piece_weight_g": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Piece Weight G"
+        }
+      },
+      "title": "OverrideMacros",
+      "type": "object"
+    }
+  },
+  "description": "The top-level recipe structure from the user's input JSON.",
+  "properties": {
+    "recipe_name": {
+      "title": "Recipe Name",
+      "type": "string"
+    },
+    "ingredients": {
+      "items": {
+        "$ref": "#/$defs/IngredientInput"
+      },
+      "title": "Ingredients",
+      "type": "array"
+    }
+  },
+  "required": [
+    "recipe_name",
+    "ingredients"
+  ],
+  "title": "RecipeInput",
+  "type": "object"
+}
