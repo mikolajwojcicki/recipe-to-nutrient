@@ -62,6 +62,11 @@
           "title": "Carbs G",
           "type": "number"
         },
+        "fiber_g": {
+          "default": 0.0,
+          "title": "Fiber G",
+          "type": "number"
+        },
         "water_g": {
           "default": 0.0,
           "title": "Water G",
@@ -71,6 +76,18 @@
           "default": 0.0,
           "title": "Ash G",
           "type": "number"
+        },
+        "kcal": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kcal"
         },
         "piece_weight_g": {
           "anyOf": [

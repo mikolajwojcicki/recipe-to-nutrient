@@ -55,7 +55,9 @@ def convert_to_absolute(ingredient: IngredientInput, api_data: NutritionalData) 
             protein_g=ingredient.override.protein_g,
             fat_g=ingredient.override.fat_g,
             carbs_g=ingredient.override.carbs_g,
+            fiber_g=ingredient.override.fiber_g,
             ash_g=ingredient.override.ash_g,
+            kcal=ingredient.override.kcal if ingredient.override.kcal is not None else (api_data.kcal if api_data else None),
             piece_weight_g=ingredient.override.piece_weight_g or (api_data.piece_weight_g if api_data else None)
         )
     else:
@@ -84,11 +86,20 @@ def convert_to_absolute(ingredient: IngredientInput, api_data: NutritionalData) 
     # Since 'macros' are per 100g, the scaling factor is total_mass_g / 100
     scale = total_mass_g / 100.0
     
+    absolute_kcal = 0.0
+    if macros.kcal is not None:
+        absolute_kcal = macros.kcal * scale
+    else:
+        # Fallback to macro-based calculation
+        absolute_kcal = (macros.protein_g * 4.0 + macros.carbs_g * 4.0 + macros.fat_g * 9.0) * scale
+    
     return AbsoluteNutritionalData(
         total_mass_g=total_mass_g,
         water_g=macros.water_g * scale,
         protein_g=macros.protein_g * scale,
         fat_g=macros.fat_g * scale,
         carbs_g=macros.carbs_g * scale,
-        ash_g=macros.ash_g * scale
+        fiber_g=macros.fiber_g * scale,
+        ash_g=macros.ash_g * scale,
+        kcal=absolute_kcal
     )

@@ -15,8 +15,11 @@ NUTRIENT_IDS = {
     1051: "water_g",
     1003: "protein_g",
     1004: "fat_g",
+    1085: "fat_g",
     1005: "carbs_g",
-    1007: "ash_g"
+    1079: "fiber_g",
+    1007: "ash_g",
+    1008: "kcal"
 }
 
 def fetch_from_usda(query: str) -> Optional[NutritionalData]:
@@ -30,7 +33,8 @@ def fetch_from_usda(query: str) -> Optional[NutritionalData]:
     params = {
         "query": query,
         "api_key": USDA_API_KEY,
-        "pageSize": 1
+        "pageSize": 1,
+        "dataType": ["Foundation", "SR Legacy"]
     }
     
     try:
@@ -40,7 +44,14 @@ def fetch_from_usda(query: str) -> Optional[NutritionalData]:
         
         foods = data.get("foods", [])
         if not foods:
-            return None
+            params.pop("dataType")
+            response = requests.get(USDA_SEARCH_URL, params=params)
+            response.raise_for_status()
+            data = response.json()
+            foods = data.get("foods", [])
+            
+            if not foods:
+                return None
             
         food = foods[0]
         nutrients = food.get("foodNutrients", [])
@@ -101,9 +112,13 @@ def fetch_from_open_food_facts(query: str) -> Optional[NutritionalData]:
             protein_g=float(nutriments.get("proteins_100g", 0.0)),
             fat_g=float(nutriments.get("fat_100g", 0.0)),
             carbs_g=float(nutriments.get("carbohydrates_100g", 0.0)),
+            fiber_g=float(nutriments.get("fiber_100g", 0.0)),
             water_g=float(nutriments.get("water_100g", 0.0)),
             ash_g=0.0 # Ash is rarely reported on OFF
         )
+        kcal = nutriments.get("energy-kcal_100g", None)
+        if kcal is not None:
+            result.kcal = float(kcal)
         return result
 
     except requests.RequestException as e:
@@ -125,13 +140,34 @@ def fetch_nutritional_data(query: str, verbose: bool = False, progress = None) -
 
     log(f"Fetching data from APIs for '{query}'...")
     
+    if query.lower().strip() == "water":
+        log("Hardcoded pure water detected.")
+        return NutritionalData(
+            water_g=100.0,
+            protein_g=0.0,
+            fat_g=0.0,
+            carbs_g=0.0,
+            fiber_g=0.0,
+            ash_g=0.0,
+            kcal=0.0
+        )
+        
+    def estimate_water_if_missing(res: NutritionalData):
+        if res.water_g == 0.0:
+            estimated_water = 100.0 - res.protein_g - res.fat_g - res.carbs_g - res.ash_g
+            if estimated_water > 0:
+                res.water_g = estimated_water
+                log(f"Water property missing/zero. Algebraically estimated water to {estimated_water:.1f}g based on remaining mass.")
+
     usda_result = fetch_from_usda(query)
     if usda_result is not None:
+        estimate_water_if_missing(usda_result)
         return usda_result
         
     log(f"USDA failed or returned nothing for '{query}'. Trying Open Food Facts...")
     off_result = fetch_from_open_food_facts(query)
     if off_result is not None:
+        estimate_water_if_missing(off_result)
         return off_result
         
     log(f"Could not find data for '{query}' anywhere. Defaulting to 0 macros.")

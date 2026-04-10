@@ -9,8 +9,10 @@ class OverrideMacros(BaseModel):
     protein_g: float = 0.0
     fat_g: float = 0.0
     carbs_g: float = 0.0
+    fiber_g: float = 0.0
     water_g: float = 0.0
     ash_g: float = 0.0
+    kcal: Optional[float] = None
     
     # Optional piece weight if unit is "piece"
     piece_weight_g: Optional[float] = None
@@ -44,7 +46,9 @@ class NutritionalData(BaseModel):
     protein_g: float = 0.0
     fat_g: float = 0.0
     carbs_g: float = 0.0
+    fiber_g: float = 0.0
     ash_g: float = 0.0
+    kcal: Optional[float] = None
     
     # Optional piece weight if derived from API
     piece_weight_g: Optional[float] = None
@@ -60,4 +64,6 @@ class AbsoluteNutritionalData(BaseModel):
     protein_g: float = 0.0
     fat_g: float = 0.0
     carbs_g: float = 0.0
+    fiber_g: float = 0.0
     ash_g: float = 0.0
+    kcal: float = 0.0

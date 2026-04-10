@@ -40,7 +40,9 @@ def calculate(
     total_protein = 0.0
     total_fat = 0.0
     total_carbs = 0.0
+    total_fiber = 0.0
     total_ash = 0.0
+    total_kcal = 0.0
     
     # Process each ingredient
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}")) as progress:
@@ -57,12 +59,13 @@ def calculate(
             else:
                 api_data = fetch_nutritional_data(ingredient.name, verbose=verbose, progress=progress)
                 if verbose and api_data:
-                    progress.console.print(f"[dim]Fetched per-100g data for {ingredient.name}: water={api_data.water_g:.1f}g, protein={api_data.protein_g:.1f}g, fat={api_data.fat_g:.1f}g, carbs={api_data.carbs_g:.1f}g[/dim]")
+                    kcal_str = f"{api_data.kcal:.1f}kcal" if api_data.kcal is not None else "N/A"
+                    progress.console.print(f"[dim]Fetched per-100g data for {ingredient.name}: kcal={kcal_str}, water={api_data.water_g:.1f}g, protein={api_data.protein_g:.1f}g, fat={api_data.fat_g:.1f}g, carbs={api_data.carbs_g:.1f}g, fiber={api_data.fiber_g:.1f}g[/dim]")
                 
             # 2. Convert to absolute
             abs_data = convert_to_absolute(ingredient, api_data)
             if verbose:
-                progress.console.print(f"[dim]Calculated absolute for {ingredient.amount} {ingredient.unit} of {ingredient.name}: mass={abs_data.total_mass_g:.1f}g, water={abs_data.water_g:.1f}g, protein={abs_data.protein_g:.1f}g, fat={abs_data.fat_g:.1f}g, carbs={abs_data.carbs_g:.1f}g[/dim]")
+                progress.console.print(f"[dim]Calculated absolute for {ingredient.amount} {ingredient.unit} of {ingredient.name}: mass={abs_data.total_mass_g:.1f}g, kcal={abs_data.kcal:.1f}kcal, water={abs_data.water_g:.1f}g, protein={abs_data.protein_g:.1f}g, fat={abs_data.fat_g:.1f}g, carbs={abs_data.carbs_g:.1f}g, fiber={abs_data.fiber_g:.1f}g[/dim]")
             
             # 3. Aggregate
             total_raw_mass += abs_data.total_mass_g
@@ -70,7 +73,9 @@ def calculate(
             total_protein += abs_data.protein_g
             total_fat += abs_data.fat_g
             total_carbs += abs_data.carbs_g
+            total_fiber += abs_data.fiber_g
             total_ash += abs_data.ash_g
+            total_kcal += abs_data.kcal
             
             progress.advance(task)
             
@@ -99,11 +104,11 @@ def calculate(
         final_protein_100g = (total_protein / cooked_weight) * 100
         final_fat_100g = (total_fat / cooked_weight) * 100
         final_carbs_100g = (total_carbs / cooked_weight) * 100
+        final_fiber_100g = (total_fiber / cooked_weight) * 100
         final_ash_100g = (total_ash / cooked_weight) * 100
-        # Optional: total calories can be estimated using Atwater factors:
-        final_kcal_100g = (final_protein_100g * 4.0) + (final_carbs_100g * 4.0) + (final_fat_100g * 9.0)
+        final_kcal_100g = (total_kcal / cooked_weight) * 100
     else:
-        final_water_100g = final_protein_100g = final_fat_100g = final_carbs_100g = final_ash_100g = final_kcal_100g = 0.0
+        final_water_100g = final_protein_100g = final_fat_100g = final_carbs_100g = final_fiber_100g = final_ash_100g = final_kcal_100g = 0.0
         
     # 6. Display Table
     console.print("\n[bold]Final Prepared Nutritional Profile (Per 100g)[/bold]")
@@ -116,6 +121,7 @@ def calculate(
     table.add_row("Protein", f"{final_protein_100g:.1f} g")
     table.add_row("Fat", f"{final_fat_100g:.1f} g")
     table.add_row("Carbs", f"{final_carbs_100g:.1f} g")
+    table.add_row("Fiber", f"{final_fiber_100g:.1f} g")
     table.add_row("Ash", f"{final_ash_100g:.1f} g")
     
     console.print(table)

@@ -1,0 +1,95 @@
+{
+  "recipe_name": "Authentic Lasagne Bolognese",
+  "ingredients": [
+    {
+      "name": "coarsely ground beef ",
+      "amount": 300,
+      "unit": "g"
+    },
+    {
+      "name": "water",
+      "amount": 100,
+      "unit": "ml"
+    },
+    {
+      "name": "pancetta ",
+      "amount": 150,
+      "unit": "g"
+    },
+    {
+      "name": "onion ",
+      "amount": 1,
+      "unit": "piece"
+    },
+    {
+      "name": "carrot ",
+      "amount": 1,
+      "unit": "piece"
+    },
+    {
+      "name": "celery stalk ",
+      "amount": 1,
+      "unit": "piece"
+    },
+    {
+      "name": "dry white wine ",
+      "amount": 100,
+      "unit": "ml"
+    },
+    {
+      "name": "tomato passata ",
+      "amount": 300,
+      "unit": "g"
+    },
+    {
+      "name": "whole milk for ragù ",
+      "amount": 100,
+      "unit": "ml"
+    },
+    {
+      "name": "meat or chicken stock ",
+      "amount": 300,
+      "unit": "ml"
+    },
+    {
+      "name": "extra virgin olive oil ",
+      "amount": 45,
+      "unit": "ml"
+    },
+    {
+      "name": "whole milk for béchamel ",
+      "amount": 1000,
+      "unit": "ml"
+    },
+    {
+      "name": "unsalted butter ",
+      "amount": 100,
+      "unit": "g"
+    },
+    {
+      "name": "all-purpose flour ",
+      "amount": 100,
+      "unit": "g"
+    },
+    {
+      "name": "fresh lasagne sheets ",
+      "amount": 500,
+      "unit": "g"
+    },
+    {
+      "name": "Parmigiano-Reggiano cheese ",
+      "amount": 100,
+      "unit": "g"
+    },
+    {
+      "name": "salt ",
+      "amount": 10,
+      "unit": "g"
+    },
+    {
+      "name": "black pepper ",
+      "amount": 5,
+      "unit": "g"
+    }
+  ]
+}
